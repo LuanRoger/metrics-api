@@ -5,28 +5,18 @@ import {
 import { ENV } from "varlock/env";
 import type { SummaryTimeRange } from "../routes/types";
 import {
+  wakatimeAllTimeResponseSchema,
   wakatimeProgramLanguagesResponseSchema,
   wakatimeStatsResponseSchema,
   wakatimeSummaryResponseSchema,
 } from "../schemas";
 import {
+  adaptWakatimeAllTimeResponseToStats,
   adaptWakatimeResponseToWakatimeStats,
   adaptWakatimeResponseToWakatimeSummary,
 } from "../schemas/adapters";
 import type { WakatimeSummaryTimeRange } from "../types";
-
-async function parseWakatimeJson(response: Response) {
-  if (!response.ok) {
-    throw new ServiceRequestError(
-      "Wakatime",
-      new Error(`Upstream returned HTTP ${response.status}`)
-    );
-  }
-
-  return await response.json().catch((error: unknown) => {
-    throw new ServiceRequestError("Wakatime", error);
-  });
-}
+import { parseWakatimeJson } from "../utils";
 
 export async function getWakatimeFullStats() {
   const [stats, languages] = await Promise.all([
@@ -110,4 +100,23 @@ export async function getWakatimeSummary(range: SummaryTimeRange) {
   }
 
   return adaptWakatimeResponseToWakatimeSummary(data);
+}
+
+export async function getWakatimeAllTimeStats() {
+  const { WAKATIME_URL: wakatimeUrl, WAKATIME_OAUTH_KEY: wakatimeKey } = ENV;
+
+  const response = await fetch(
+    `${wakatimeUrl}/users/current/all_time_since_today?api_key=${wakatimeKey}`
+  ).catch((requestError) => {
+    throw new ServiceRequestError("Wakatime", requestError);
+  });
+
+  const json = await parseWakatimeJson(response);
+  const { success, error, data } =
+    await wakatimeAllTimeResponseSchema.safeParseAsync(json);
+  if (!success) {
+    throw new UnexpectedServiceResponseParseError("Wakatime", error);
+  }
+
+  return adaptWakatimeAllTimeResponseToStats(data);
 }

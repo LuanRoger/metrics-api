@@ -70,6 +70,32 @@ export const wakatimeSummaryResponseSchema = z
   })
   .openapi("WakatimeSummary");
 
+export const wakatimeOverviewResponseSchema = z
+  .object({
+    dailyAverage: z.number().openapi({
+      description:
+        "Average tracked seconds per day since the account start date.",
+      example: 11_854,
+    }),
+    decimal: z.string().openapi({ example: "4461.63" }),
+    digital: z.string().openapi({ example: "4461:38" }),
+    isUpToDate: z.boolean().openapi({ example: true }),
+    percentCalculated: z.number().openapi({ example: 100 }),
+    range: z.object({
+      end: z.iso.datetime({ offset: true }),
+      endDate: z.iso.date(),
+      endText: z.string(),
+      start: z.iso.datetime({ offset: true }),
+      startDate: z.iso.date(),
+      startText: z.string(),
+      timezone: z.string(),
+    }),
+    text: z.string().openapi({ example: "4,465 hrs 58 mins" }),
+    timeout: z.number().openapi({ example: 15 }),
+    totalSeconds: z.number().openapi({ example: 16_077_513.444_513 }),
+  })
+  .openapi("WakatimeOverview");
+
 export const summaryTimeRange = z.enum([
   "today",
   "yesterday",

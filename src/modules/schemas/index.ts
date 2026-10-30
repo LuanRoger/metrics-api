@@ -167,3 +167,25 @@ export const wakatimeSummaryResponseSchema = z.object({
   end: z.iso.datetime({ offset: true }),
   start: z.iso.datetime({ offset: true }),
 });
+
+export const wakatimeAllTimeResponseSchema = z.object({
+  data: z.object({
+    daily_average: z.number(),
+    decimal: z.string(),
+    digital: z.string(),
+    is_up_to_date: z.boolean(),
+    percent_calculated: z.number(),
+    range: z.object({
+      end: z.iso.datetime({ offset: true }),
+      end_date: z.iso.date(),
+      end_text: z.string(),
+      start: z.iso.datetime({ offset: true }),
+      start_date: z.iso.date(),
+      start_text: z.string(),
+      timezone: z.string(),
+    }),
+    text: z.string(),
+    timeout: z.number(),
+    total_seconds: z.number(),
+  }),
+});

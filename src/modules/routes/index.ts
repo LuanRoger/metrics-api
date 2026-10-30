@@ -4,34 +4,40 @@ import {
   formatValidationIssues,
 } from "@shared/errors/utils";
 import { responseErrorSchema } from "@shared/schemas";
-import { getWakatimeFullStats, getWakatimeSummary } from "../use-cases";
+import {
+  getWakatimeAllTimeStats,
+  getWakatimeFullStats,
+  getWakatimeSummary,
+} from "../use-cases";
 import {
   wakatimeGetSummaryQuerySchema,
+  wakatimeOverviewResponseSchema,
   wakatimeStatsResponseSchema,
   wakatimeSummaryResponseSchema,
 } from "./schemas";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>({
   defaultHook: (result, c) => {
-    if (!result.success) {
-      return c.json(
-        {
-          error: {
-            code: "INVALID_REQUEST",
-            details: formatValidationIssues(result.error),
-            message: "The request is invalid.",
-          },
-        },
-        400
-      );
+    if (result.success) {
+      return result.data;
     }
+
+    return c.json(
+      {
+        error: {
+          code: "INVALID_REQUEST",
+          details: formatValidationIssues(result.error),
+          message: "The request is invalid.",
+        },
+      },
+      400
+    );
   },
 });
 
 app.openapi(
   createRoute({
-    description:
-      "Returns normalized WakaTime statistics with language metadata when available.",
+    description: "WakaTime statistics.",
     method: "get",
     operationId: "getWakatimeStats",
     path: "/stats",
@@ -115,6 +121,54 @@ app.openapi(
       const summary = await getWakatimeSummary(range);
 
       return c.json(summary, 200);
+    } catch (error) {
+      const serviceError = formatServiceError(error);
+      if (serviceError) {
+        return c.json({ error: serviceError }, 502);
+      }
+      return c.json(
+        {
+          error: {
+            code: "INTERNAL_ERROR",
+            message: "An unexpected error occurred.",
+          },
+        },
+        500
+      );
+    }
+  }
+);
+
+app.openapi(
+  createRoute({
+    description: "Returns all-time coding totals.",
+    method: "get",
+    operationId: "getWakatimeOverview",
+    path: "/overview",
+    responses: {
+      200: {
+        content: {
+          "application/json": { schema: wakatimeOverviewResponseSchema },
+        },
+        description: "All-time WakaTime overview",
+      },
+      500: {
+        content: { "application/json": { schema: responseErrorSchema } },
+        description: "Unexpected error",
+      },
+      502: {
+        content: { "application/json": { schema: responseErrorSchema } },
+        description: "WakaTime request failed",
+      },
+    },
+    summary: "Get all-time coding overview",
+    tags: ["WakaTime"],
+  }),
+  async (c) => {
+    try {
+      const overview = await getWakatimeAllTimeStats();
+
+      return c.json(overview, 200);
     } catch (error) {
       const serviceError = formatServiceError(error);
       if (serviceError) {

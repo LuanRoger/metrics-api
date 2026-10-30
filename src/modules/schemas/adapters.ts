@@ -1,5 +1,6 @@
 import type { WakatimeStats } from "../routes/types";
 import type {
+  WakatimeAllTimeResponse,
   WakatimeLanguageMetadata,
   WakatimeStatsResponse,
   WakatimeSummaryResponse,
@@ -41,6 +42,33 @@ function aggregateSummaryActivities(
         : 0,
     totalSeconds: seconds,
   })).sort((a, b) => b.totalSeconds - a.totalSeconds);
+}
+
+export function adaptWakatimeAllTimeResponseToStats(
+  model: WakatimeAllTimeResponse
+) {
+  const { data } = model;
+  const { range } = data;
+
+  return {
+    dailyAverage: data.daily_average,
+    decimal: data.decimal,
+    digital: data.digital,
+    isUpToDate: data.is_up_to_date,
+    percentCalculated: data.percent_calculated,
+    range: {
+      end: range.end,
+      endDate: range.end_date,
+      endText: range.end_text,
+      start: range.start,
+      startDate: range.start_date,
+      startText: range.start_text,
+      timezone: range.timezone,
+    },
+    text: data.text,
+    timeout: data.timeout,
+    totalSeconds: data.total_seconds,
+  };
 }
 
 export function adaptWakatimeResponseToWakatimeSummary(
