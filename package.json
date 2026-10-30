@@ -14,6 +14,7 @@
   "dependencies": {
     "@hono/zod-openapi": "^1.6.3",
     "@hono/zod-validator": "^0.9.1",
+    "@scalar/hono-api-reference": "^0.12.16",
     "@varlock/cloudflare-integration": "^1.6.3",
     "hono": "^4.13.14",
     "varlock": "^1.24.0",
