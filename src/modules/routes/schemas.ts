@@ -24,6 +24,16 @@ const activitySchema = z.object({
     .openapi({ description: "Duration in seconds.", example: 8100 }),
 });
 
+const aggregatedActivitySchema = z.object({
+  name: z.string(),
+  percent: z
+    .number()
+    .openapi({ description: "Percentage of the cumulative tracked time." }),
+  totalSeconds: z
+    .number()
+    .openapi({ description: "Total seconds across the selected range." }),
+});
+
 const languageMetadataSchema = z.object({
   aliases: z.array(z.string()),
   color: z.string().nullable(),
@@ -37,6 +47,7 @@ const languageMetadataSchema = z.object({
 
 export const wakatimeSummaryResponseSchema = z
   .object({
+    categories: z.array(aggregatedActivitySchema),
     cumulativeTotal: z.object({
       decimal: z.string(),
       digital: z.string(),
@@ -52,41 +63,9 @@ export const wakatimeSummaryResponseSchema = z
       text: z.string(),
       textIncludingOtherLanguage: z.string(),
     }),
-    data: z.array(
-      z.object({
-        categories: z.array(activitySchema),
-        grandTotal: z.object({
-          aiAdditions: z.number(),
-          aiCachedInputTokens: z.number(),
-          aiDeletions: z.number(),
-          aiInputTokens: z.number(),
-          aiModelBreakdown: z.array(z.unknown()),
-          aiModelCosts: z.record(z.string(), z.unknown()),
-          aiModelLineChanges: z.record(z.string(), z.unknown()),
-          aiModelTotalCost: z.number(),
-          aiOutputTokens: z.number(),
-          aiPromptEventsAvgPerSession: z.number(),
-          aiPromptEventsMedianPerSession: z.number(),
-          aiPromptEventsTotal: z.number(),
-          aiPromptLengthAvg: z.number(),
-          aiPromptLengthAvgPerSession: z.number(),
-          aiPromptLengthMedianPerSession: z.number(),
-          aiPromptLengthSum: z.number(),
-          aiSessions: z.number(),
-          decimal: z.string(),
-          digital: z.string(),
-          hours: z.number(),
-          humanAdditions: z.number(),
-          humanDeletions: z.number(),
-          minutes: z.number(),
-          text: z.string(),
-          totalSeconds: z.number(),
-        }),
-        languages: z.array(activitySchema),
-        operatingSystems: z.array(activitySchema),
-      })
-    ),
     end: z.iso.datetime({ offset: true }),
+    languages: z.array(aggregatedActivitySchema),
+    operatingSystems: z.array(aggregatedActivitySchema),
     start: z.iso.datetime({ offset: true }),
   })
   .openapi("WakatimeSummary");

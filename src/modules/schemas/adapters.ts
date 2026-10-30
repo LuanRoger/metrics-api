@@ -18,12 +18,42 @@ function adaptActivity(activity: Activity) {
   };
 }
 
+function aggregateSummaryActivities(
+  days: WakatimeSummaryResponse["data"],
+  key: "categories" | "languages" | "operating_systems",
+  totalSeconds: number
+) {
+  const totals = new Map<string, number>();
+  for (const day of days) {
+    for (const activity of day[key]) {
+      totals.set(
+        activity.name,
+        (totals.get(activity.name) ?? 0) + activity.total_seconds
+      );
+    }
+  }
+
+  return Array.from(totals, ([name, seconds]) => ({
+    name,
+    percent:
+      totalSeconds > 0
+        ? Math.round((seconds / totalSeconds) * 10_000) / 100
+        : 0,
+    totalSeconds: seconds,
+  })).sort((a, b) => b.totalSeconds - a.totalSeconds);
+}
+
 export function adaptWakatimeResponseToWakatimeSummary(
   model: WakatimeSummaryResponse
 ) {
   const { cumulative_total: cumulative, daily_average: average } = model;
 
   return {
+    categories: aggregateSummaryActivities(
+      model.data,
+      "categories",
+      cumulative.seconds
+    ),
     cumulativeTotal: {
       decimal: cumulative.decimal,
       digital: cumulative.digital,
@@ -39,44 +69,17 @@ export function adaptWakatimeResponseToWakatimeSummary(
       text: average.text,
       textIncludingOtherLanguage: average.text_including_other_language,
     },
-    data: model.data.map((day) => {
-      const total = day.grand_total;
-      return {
-        categories: day.categories.map(adaptActivity),
-        grandTotal: {
-          aiAdditions: total.ai_additions,
-          aiCachedInputTokens: total.ai_cached_input_tokens,
-          aiDeletions: total.ai_deletions,
-          aiInputTokens: total.ai_input_tokens,
-          aiModelBreakdown: total.ai_model_breakdown,
-          aiModelCosts: total.ai_model_costs,
-          aiModelLineChanges: total.ai_model_line_changes,
-          aiModelTotalCost: total.ai_model_total_cost,
-          aiOutputTokens: total.ai_output_tokens,
-          aiPromptEventsAvgPerSession: total.ai_prompt_events_avg_per_session,
-          aiPromptEventsMedianPerSession:
-            total.ai_prompt_events_median_per_session,
-          aiPromptEventsTotal: total.ai_prompt_events_total,
-          aiPromptLengthAvg: total.ai_prompt_length_avg,
-          aiPromptLengthAvgPerSession: total.ai_prompt_length_avg_per_session,
-          aiPromptLengthMedianPerSession:
-            total.ai_prompt_length_median_per_session,
-          aiPromptLengthSum: total.ai_prompt_length_sum,
-          aiSessions: total.ai_sessions,
-          decimal: total.decimal,
-          digital: total.digital,
-          hours: total.hours,
-          humanAdditions: total.human_additions,
-          humanDeletions: total.human_deletions,
-          minutes: total.minutes,
-          text: total.text,
-          totalSeconds: total.total_seconds,
-        },
-        languages: day.languages.map(adaptActivity),
-        operatingSystems: day.operating_systems.map(adaptActivity),
-      };
-    }),
     end: model.end,
+    languages: aggregateSummaryActivities(
+      model.data,
+      "languages",
+      cumulative.seconds
+    ),
+    operatingSystems: aggregateSummaryActivities(
+      model.data,
+      "operating_systems",
+      cumulative.seconds
+    ),
     start: model.start,
   };
 }
