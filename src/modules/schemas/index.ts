@@ -61,6 +61,56 @@ export const wakatimeLanguageSchema = z.object({
   total_seconds: z.number(),
 });
 
+export const wakatimeSummaryGrandTotalSchema = z.object({
+  ai_additions: z.number(),
+  ai_cached_input_tokens: z.number(),
+  ai_deletions: z.number(),
+  ai_input_tokens: z.number(),
+  ai_model_breakdown: z.array(z.unknown()),
+  ai_model_costs: z.record(z.string(), z.unknown()),
+  ai_model_line_changes: z.record(z.string(), z.unknown()),
+  ai_model_total_cost: z.number(),
+  ai_output_tokens: z.number(),
+  ai_prompt_events_avg_per_session: z.number(),
+  ai_prompt_events_median_per_session: z.number(),
+  ai_prompt_events_total: z.number(),
+  ai_prompt_length_avg: z.number(),
+  ai_prompt_length_avg_per_session: z.number(),
+  ai_prompt_length_median_per_session: z.number(),
+  ai_prompt_length_sum: z.number(),
+  ai_sessions: z.number(),
+  decimal: z.string(),
+  digital: z.string(),
+  hours: z.number(),
+  human_additions: z.number(),
+  human_deletions: z.number(),
+  minutes: z.number(),
+  text: z.string(),
+  total_seconds: z.number(),
+});
+
+export const wakatimeSummaryCummulativeTotalSchema = z.object({
+  decimal: z.string(),
+  digital: z.string(),
+  seconds: z.number(),
+  text: z.string(),
+});
+
+export const wakatimeSummaryDailyAverangeSchema = z.object({
+  days_including_holidays: z.number(),
+  days_minus_holidays: z.number(),
+  holidays: z.number(),
+  seconds: z.number(),
+  seconds_including_other_language: z.number(),
+  text: z.string(),
+  text_including_other_language: z.string(),
+});
+
+export const wakatimeProgramLanguagesResponseSchema = z.object({
+  data: z.array(wakatimeLanguageMetadataSchema),
+  total: z.number(),
+});
+
 export const wakatimeStatsResponseSchema = z.object({
   data: z.object({
     ai_models: z.array(z.unknown()),
@@ -103,7 +153,17 @@ export const wakatimeStatsResponseSchema = z.object({
   }),
 });
 
-export const wakatimeProgramLanguagesResponseSchema = z.object({
-  data: z.array(wakatimeLanguageMetadataSchema),
-  total: z.number(),
+export const wakatimeSummaryResponseSchema = z.object({
+  cumulative_total: wakatimeSummaryCummulativeTotalSchema,
+  daily_average: wakatimeSummaryDailyAverangeSchema,
+  data: z.array(
+    z.object({
+      categories: z.array(wakatimeCategorySchema),
+      grand_total: wakatimeSummaryGrandTotalSchema,
+      languages: z.array(wakatimeCategorySchema),
+      operating_systems: z.array(wakatimeCategorySchema),
+    })
+  ),
+  end: z.iso.datetime({ offset: true }),
+  start: z.iso.datetime({ offset: true }),
 });

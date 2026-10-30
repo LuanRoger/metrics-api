@@ -1,15 +1,23 @@
+import type { ZodError } from "zod";
+
 export class ServiceRequestError extends Error {
-  constructor(serviceName: string, error: Error) {
-    super(error.message);
+  readonly serviceName: string;
+
+  constructor(serviceName: string, cause: unknown) {
+    super(`${serviceName} request failed`, { cause });
     this.name = "ServiceRequestError";
-    this.message = `Service ${serviceName} failed: ${error.message}`;
+    this.serviceName = serviceName;
   }
 }
 
 export class UnexpectedServiceResponseParseError extends Error {
-  constructor(serviceName: string, error: Error) {
-    super(error.message);
+  readonly serviceName: string;
+  readonly validationError: ZodError;
+
+  constructor(serviceName: string, error: ZodError) {
+    super(`${serviceName} returned an invalid response`, { cause: error });
     this.name = "UnexpectedServiceResponseParseError";
-    this.message = `Service ${serviceName} failed: ${error.message}`;
+    this.serviceName = serviceName;
+    this.validationError = error;
   }
 }

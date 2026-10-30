@@ -14,10 +14,12 @@ app.use(
 
 app.doc("/openapi", {
   info: {
-    title: "metrics-api",
+    description: "Normalized WakaTime coding statistics and summaries.",
+    title: "Metrics API",
     version: "1.0.0",
   },
   openapi: "3.0.0",
+  tags: [{ description: "Coding activity from WakaTime.", name: "WakaTime" }],
 });
 app.get("/doc", Scalar({ url: "/openapi" }));
 
