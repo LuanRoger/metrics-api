@@ -2,6 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { rateLimiter } from "hono-rate-limiter";
 import { wakatimeModule } from "./modules/routes";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
@@ -9,6 +10,12 @@ app.use(logger());
 app.use(
   cors({
     allowMethods: ["GET"],
+  })
+);
+app.use(
+  rateLimiter<{ Bindings: CloudflareBindings }>({
+    binding: (c) => c.env.RATE_LIMITER,
+    keyGenerator: (c) => c.req.header("cf-connecting-ip") ?? "",
   })
 );
 

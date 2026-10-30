@@ -17,6 +17,7 @@
     "@scalar/hono-api-reference": "^0.12.16",
     "@varlock/cloudflare-integration": "^1.6.3",
     "hono": "^4.13.14",
+    "hono-rate-limiter": "^0.5.4",
     "varlock": "^1.24.0",
     "zod": "^4.6.7"
   },
