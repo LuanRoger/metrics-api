@@ -21,3 +21,10 @@ export class UnexpectedServiceResponseParseError extends Error {
     this.validationError = error;
   }
 }
+
+export class ParseError extends Error {
+  constructor(message: string, { cause }: { cause: unknown }) {
+    super(message, { cause });
+    this.name = "ParseError";
+  }
+}
