@@ -1,7 +1,17 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import {
+  getCacheKey,
+  parseCacheEntry,
+  stringifyCacheEntry,
+} from "@/services/kv";
 import { formatServiceError } from "@/shared/errors/utils";
 import { responseErrorSchema } from "@/shared/schemas";
-import { getCurrentPlayingTrack, getSpotifyRecentlyPlayed } from "../use-cases";
+import type { SpotifyTokenResponse } from "../schemas/types";
+import {
+  getCurrentPlayingTrack,
+  getSpotifyAccessToken,
+  getSpotifyRecentlyPlayed,
+} from "../use-cases";
 import {
   recentlyPlayedResponseSchema,
   spotifyCurrentPlayingSchema,
@@ -85,8 +95,25 @@ app.openapi(
     tags: ["Spotify"],
   }),
   async (c) => {
+    const kv = c.env.CACHE;
+
     try {
-      const track = await getCurrentPlayingTrack();
+      const cacheTokenKey = getCacheKey("SPOTIFY", "REFRESH_TOKEN");
+      const cachedToken = await kv.get(cacheTokenKey);
+
+      let token: SpotifyTokenResponse;
+      if (cachedToken) {
+        token = parseCacheEntry<SpotifyTokenResponse>(cachedToken);
+      } else {
+        token = await getSpotifyAccessToken();
+
+        const { expires_in: expirationTtl } = token;
+        await kv.put(cacheTokenKey, stringifyCacheEntry(token), {
+          expirationTtl,
+        });
+      }
+
+      const track = await getCurrentPlayingTrack(token);
       if (!track) {
         return c.body(null, 204);
       }

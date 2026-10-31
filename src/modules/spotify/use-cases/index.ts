@@ -9,9 +9,10 @@ import {
   adaptCurrentPlayingReponseToSpotifyCurrentPlayingTrackInfo,
   adaptRecentlyPlayedTrackResponseToSpotifyTrackingInfo,
 } from "../schemas/adapters";
+import type { SpotifyTokenResponse } from "../schemas/types";
 import { parseSpotifyJson } from "../utils";
 
-async function getSpotifyAccessToken() {
+export async function getSpotifyAccessToken(): Promise<SpotifyTokenResponse> {
   const {
     SPOTIFY_CLIENT_ID: clientId,
     SPOTIFY_CLIENT_SECRET: clientSecret,
@@ -61,8 +62,8 @@ export async function getSpotifyRecentlyPlayed() {
   return trackInfo;
 }
 
-export async function getCurrentPlayingTrack() {
-  const { access_token: accessToken } = await getSpotifyAccessToken();
+export async function getCurrentPlayingTrack(token: SpotifyTokenResponse) {
+  const { access_token: accessToken } = token;
 
   const response = await fetch(
     "https://api.spotify.com/v1/me/player/currently-playing",

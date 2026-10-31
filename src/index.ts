@@ -3,12 +3,14 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { cache } from "hono/cache";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { poweredBy } from "hono/powered-by";
 import { rateLimiter } from "hono-rate-limiter";
 import { spotifyModule } from "./modules/spotify/route";
 import { wakatimeModule } from "./modules/wakatime/routes";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
 app.use(logger());
+app.use(poweredBy());
 app.use(
   cors({
     allowMethods: ["GET"],
@@ -21,9 +23,17 @@ app.use(
   })
 );
 app.use(
+  "/wakatime/*",
+  cache({
+    cacheControl: "max-age=3600",
+    cacheName: "metrics-api-wakatime",
+  })
+);
+app.use(
+  "/spotify/*",
   cache({
     cacheControl: "max-age=60",
-    cacheName: "metrics-api",
+    cacheName: "metrics-api-spotify",
   })
 );
 
