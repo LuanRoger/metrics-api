@@ -1,5 +1,6 @@
 import { ENV } from "varlock/env";
 import { UnexpectedServiceResponseParseError } from "@/shared/errors";
+import { RECENTLY_PLAYED_TIMESTAMP } from "../constants";
 import {
   spotifyCurrentPlayingResponseSchema,
   spotifyRecentlyPlayedResponseSchema,
@@ -37,12 +38,11 @@ export async function getSpotifyAccessToken(): Promise<SpotifyTokenResponse> {
   return data;
 }
 
-export async function getSpotifyRecentlyPlayed() {
-  const { access_token: accessToken } = await getSpotifyAccessToken();
-  const timestamp = Date.now() - 10 * 60 * 60 * 1000;
+export async function getSpotifyRecentlyPlayed(token: SpotifyTokenResponse) {
+  const { access_token: accessToken } = token;
 
   const response = await fetch(
-    `https://api.spotify.com/v1/me/player/recently-played?after=${timestamp}`,
+    `https://api.spotify.com/v1/me/player/recently-played?after=${RECENTLY_PLAYED_TIMESTAMP}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
