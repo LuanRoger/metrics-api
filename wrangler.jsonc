@@ -7,6 +7,12 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "6b31b2bc150042f7a1e225596eeaf733",
+    }
+  ],
   "ratelimits": [
     {
       "name": "RATE_LIMITER",
