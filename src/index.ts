@@ -4,6 +4,7 @@ import { cache } from "hono/cache";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { rateLimiter } from "hono-rate-limiter";
+import { spotifyModule } from "./modules/spotify/route";
 import { wakatimeModule } from "./modules/wakatime/routes";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
@@ -38,5 +39,6 @@ app.doc("/openapi", {
 app.get("/doc", Scalar({ url: "/openapi" }));
 
 app.route("/wakatime", wakatimeModule);
+app.route("/spotify", spotifyModule);
 
 export default app;
