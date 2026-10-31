@@ -1,24 +1,11 @@
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { formatServiceError } from "@/shared/errors/utils";
 import { responseErrorSchema } from "@/shared/schemas";
 import { getCurrentPlayingTrack, getSpotifyRecentlyPlayed } from "../use-cases";
-import { spotifyCurrentPlayingSchema } from "./schemas";
-
-const recentlyPlayedResponseSchema = z
-  .array(
-    z.object({
-      artists: z.array(z.object({ href: z.url(), name: z.string() })),
-      image: z
-        .object({
-          height: z.number(),
-          url: z.url(),
-          width: z.number(),
-        })
-        .optional(),
-      name: z.string(),
-    })
-  )
-  .openapi("SpotifyRecentlyPlayed");
+import {
+  recentlyPlayedResponseSchema,
+  spotifyCurrentPlayingSchema,
+} from "./schemas";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
 
@@ -103,12 +90,14 @@ app.openapi(
       if (!track) {
         return c.body(null, 204);
       }
+
       return c.json(track, 200);
     } catch (error) {
       const serviceError = formatServiceError(error);
       if (serviceError) {
         return c.json({ error: serviceError }, 502);
       }
+
       return c.json(
         {
           error: {
