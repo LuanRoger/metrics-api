@@ -1,4 +1,4 @@
-import type { SpotifyCurrentPlaying as SpotifyCurrentPlayingRouteResponse } from "../route/types";
+import type { SpotifyCurrentPlaying as SpotifyCurrentPlayingRouteResponse } from "../routes/types";
 import type { SpotifyCurrentPlaying, SpotifyRecentlyPlayed } from "./types";
 
 export function adaptRecentlyPlayedTrackResponseToSpotifyTrackingInfo(
