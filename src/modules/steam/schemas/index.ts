@@ -66,10 +66,8 @@ export const steamPlayerStatsSchema = z
   })
   .openapi("SteamPlayerStats");
 
-export const steamPlayerStatsResponseSchema = z
-  .object({
-    playerstats: steamPlayerStatsSchema,
-  })
+export const steamGameAchievementsResponseSchema = z
+  .array(steamPlayerAchievementSchema)
   .openapi("SteamPlayerStatsResponse");
 
 export const steamPlayerStatsAchievementsApiResponseSchema = z

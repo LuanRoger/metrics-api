@@ -1,5 +1,8 @@
 import { z } from "@hono/zod-openapi";
-import { steamGameSchema, steamPlayerStatsResponseSchema } from "../schemas";
+import {
+  steamGameAchievementsResponseSchema as steamGameAchievementsResponseSchemaBase,
+  steamGameSchema,
+} from "../schemas";
 
 export const steamGamesResponseSchema = z
   .array(steamGameSchema)
@@ -18,4 +21,6 @@ export const steamGameAchievementsParamsSchema = z.object({
 });
 
 export const steamGameAchievementsResponseSchema =
-  steamPlayerStatsResponseSchema.openapi("SteamGameAchievementsResponse");
+  steamGameAchievementsResponseSchemaBase.openapi(
+    "SteamGameAchievementsResponse"
+  );

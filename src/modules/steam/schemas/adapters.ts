@@ -1,28 +1,22 @@
 import type {
+  SteamGameAchievementsResponse,
   SteamGamesResponse,
   SteamOwnedGamesApiResponse,
   SteamPlayerStatsAchievementsApiResponse,
-  SteamPlayerStatsResponse,
 } from "./types";
 
 export function adaptPlayerStatsResponseToSteamPlayerStatsResponse(
   response: SteamPlayerStatsAchievementsApiResponse
-): SteamPlayerStatsResponse {
+): SteamGameAchievementsResponse {
   const { playerstats } = response;
 
-  return {
-    playerstats: {
-      achievements: playerstats.achievements.map((achievement) => ({
-        achieved: achievement.achieved,
-        apiname: achievement.apiname,
-        description: achievement.description,
-        name: achievement.name,
-        unlocktime: achievement.unlocktime,
-      })),
-      gameName: playerstats.gameName,
-      steamID: playerstats.steamID,
-    },
-  };
+  return playerstats.achievements.map((achievement) => ({
+    achieved: achievement.achieved,
+    apiname: achievement.apiname,
+    description: achievement.description,
+    name: achievement.name,
+    unlocktime: achievement.unlocktime,
+  }));
 }
 
 export function adaptOwnedGamesResponseToSteamGamesResponse(
