@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { poweredBy } from "hono/powered-by";
 import { rateLimiter } from "hono-rate-limiter";
 import { spotifyModule } from "./modules/spotify/routes";
+import { steamModule } from "./modules/steam/routes";
 import { wakatimeModule } from "./modules/wakatime/routes";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
@@ -44,11 +45,15 @@ app.doc("/openapi", {
     version: "1.0.0",
   },
   openapi: "3.0.0",
-  tags: [{ description: "Coding activity from WakaTime.", name: "WakaTime" }],
+  tags: [
+    { description: "Coding activity from WakaTime.", name: "WakaTime" },
+    { description: "Owned games from Steam.", name: "Steam" },
+  ],
 });
 app.get("/doc", Scalar({ url: "/openapi" }));
 
 app.route("/wakatime", wakatimeModule);
 app.route("/spotify", spotifyModule);
+app.route("/steam", steamModule);
 
 export default app;
