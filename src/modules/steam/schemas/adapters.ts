@@ -26,19 +26,34 @@ export function adaptOwnedGamesResponseToSteamGamesResponse(
 
   return {
     gameCount: innerResponse.game_count,
-    games: innerResponse.games.map((game) => ({
-      appId: game.appid,
-      contentDescriptorIds: game.content_descriptorids,
-      hasCommunityVisibleStats: game.has_community_visible_stats ?? false,
-      imgIconUrl: game.img_icon_url,
-      name: game.name,
-      playtimeDeckForever: game.playtime_deck_forever,
-      playtimeDisconnected: game.playtime_disconnected,
-      playtimeForever: game.playtime_forever,
-      playtimeLinuxForever: game.playtime_linux_forever,
-      playtimeMacForever: game.playtime_mac_forever,
-      playtimeWindowsForever: game.playtime_windows_forever,
-      rtimeLastPlayed: game.rtime_last_played,
-    })),
+    games: innerResponse.games.map(
+      ({
+        appid,
+        content_descriptorids,
+        has_community_visible_stats,
+        img_icon_url,
+        name,
+        playtime_deck_forever,
+        playtime_disconnected,
+        playtime_forever,
+        playtime_linux_forever,
+        playtime_mac_forever,
+        playtime_windows_forever,
+        rtime_last_played,
+      }) => ({
+        appId: appid,
+        contentDescriptorIds: content_descriptorids,
+        hasCommunityVisibleStats: has_community_visible_stats ?? false,
+        imgIconUrl: img_icon_url,
+        name,
+        playtimeDeckForever: playtime_deck_forever,
+        playtimeDisconnected: playtime_disconnected,
+        playtimeForever: Math.ceil(playtime_forever / 60),
+        playtimeLinuxForever: Math.ceil(playtime_linux_forever / 60),
+        playtimeMacForever: Math.ceil(playtime_mac_forever / 60),
+        playtimeWindowsForever: Math.ceil(playtime_windows_forever / 60),
+        rtimeLastPlayed: rtime_last_played,
+      })
+    ),
   };
 }
