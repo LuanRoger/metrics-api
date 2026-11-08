@@ -12,7 +12,6 @@ import type {
   steamOwnedGamesApiResponseSchema,
   steamPlayerAchievementSchema,
   steamPlayerStatsAchievementsApiResponseSchema,
-  steamPlayerStatsSchema,
 } from "./index";
 
 export type SteamOwnedGamesApiResponse = z.infer<
@@ -23,7 +22,6 @@ export type SteamGamesResponse = z.infer<typeof steamGamesResponseSchema>;
 export type SteamPlayerAchievement = z.infer<
   typeof steamPlayerAchievementSchema
 >;
-export type SteamPlayerStats = z.infer<typeof steamPlayerStatsSchema>;
 export type SteamPlayerStatsAchievementsApiResponse = z.infer<
   typeof steamPlayerStatsAchievementsApiResponseSchema
 >;

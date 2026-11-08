@@ -1,4 +1,5 @@
 import type {
+  SteamGameAchievement,
   SteamGameAchievementsResponse,
   SteamGameSchemaApiResponse,
   SteamGameSchemaResponse,
@@ -34,18 +35,32 @@ export function adaptGameSchemaResponseToSteamGameSchemaResponse(
   };
 }
 
-export function adaptPlayerStatsResponseToSteamPlayerStatsResponse(
-  response: SteamPlayerStatsAchievementsApiResponse
+export function adaptPlayerStatsResponseToSteamAchievementsResponse(
+  response: SteamPlayerStatsAchievementsApiResponse,
+  achievements: SteamGameAchievement[]
 ): SteamGameAchievementsResponse {
   const { playerstats } = response;
 
-  return playerstats.achievements.map((achievement) => ({
-    achieved: achievement.achieved,
-    apiname: achievement.apiname,
-    description: achievement.description,
-    name: achievement.name,
-    unlocktime: achievement.unlocktime,
-  }));
+  return playerstats.achievements.map((achievement) => {
+    const achievementSchema = achievements.find(
+      (a) => a.name === achievement.apiname
+    );
+    const icon = achievementSchema?.icon;
+    const iconGray = achievementSchema?.icongray;
+
+    const isHidden = achievementSchema?.hidden === 1;
+
+    return {
+      achieved: achievement.achieved,
+      apiname: achievement.apiname,
+      description: isHidden ? null : achievement.description,
+      icon,
+      iconGray,
+      isHidden,
+      name: achievement.name,
+      unlocktime: achievement.unlocktime,
+    };
+  });
 }
 
 export function adaptOwnedGamesResponseToSteamGamesResponse(

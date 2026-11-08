@@ -30,7 +30,7 @@ export const steamGameSchema = z
     contentDescriptorIds: z.array(z.number()),
     hasCommunityVisibleStats: z.boolean(),
     imgIconUrl: z.string(),
-    name: z.string().openapi({ example: "Counter-Strike 2" }),
+    name: z.string().openapi({ example: "Rocket League" }),
     playtimeDeckForever: z.number(),
     playtimeDisconnected: z.number(),
     playtimeForever: z.number(),
@@ -52,7 +52,10 @@ export const steamPlayerAchievementSchema = z
   .object({
     achieved: z.number(),
     apiname: z.string(),
-    description: z.string(),
+    description: z.string().nullable(),
+    icon: z.url().optional(),
+    iconGray: z.url().optional(),
+    isHidden: z.boolean(),
     name: z.string(),
     unlocktime: z.number(),
   })
@@ -134,7 +137,7 @@ export const steamGameSchemaApiResponseSchema = z
         achievements: z.array(
           z.object({
             defaultvalue: z.number(),
-            description: z.string(),
+            description: z.string().default(""),
             displayName: z.string(),
             hidden: z.number(),
             icon: z.string(),

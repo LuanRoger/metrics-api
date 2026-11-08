@@ -8,7 +8,7 @@ import {
 import {
   adaptGameSchemaResponseToSteamGameSchemaResponse,
   adaptOwnedGamesResponseToSteamGamesResponse,
-  adaptPlayerStatsResponseToSteamPlayerStatsResponse,
+  adaptPlayerStatsResponseToSteamAchievementsResponse,
 } from "../schemas/adapters";
 
 export async function getSteamGames() {
@@ -55,7 +55,16 @@ export async function getSteamGameAchievements(appId: number) {
     throw new UnexpectedServiceResponseParseError("Steam", error);
   }
 
-  return adaptPlayerStatsResponseToSteamPlayerStatsResponse(data);
+  const {
+    availableGameStats: { achievements: achievementsResponse },
+  } = await getSteamGameSchema(appId);
+
+  const achievements = adaptPlayerStatsResponseToSteamAchievementsResponse(
+    data,
+    achievementsResponse
+  );
+
+  return achievements.sort((a, b) => b.unlocktime - a.unlocktime);
 }
 
 export async function getSteamGameSchema(appId: number) {
