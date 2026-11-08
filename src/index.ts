@@ -37,6 +37,13 @@ app.use(
     cacheName: "metrics-api-spotify",
   })
 );
+app.use(
+  "/steam/*",
+  cache({
+    cacheControl: "max-age=3600",
+    cacheName: "metrics-api-steam",
+  })
+);
 
 app.doc("/openapi", {
   info: {
