@@ -82,7 +82,7 @@ app.openapi(
     description: "Get achievements for a Steam game.",
     method: "get",
     operationId: "getSteamGameAchievements",
-    path: "/games/:appId/achievements",
+    path: "/games/{appId}/achievements",
     request: { params: steamGameAchievementsParamsSchema },
     responses: {
       200: {
@@ -95,7 +95,7 @@ app.openapi(
       },
       400: {
         content: { "application/json": { schema: responseErrorSchema } },
-        description: "Invalid appId query parameter",
+        description: "Invalid appId path parameter",
       },
       500: {
         content: { "application/json": { schema: responseErrorSchema } },
@@ -163,7 +163,7 @@ app.openapi(
     description: "Get the statistics and achievements schema for a Steam game.",
     method: "get",
     operationId: "getSteamGameSchema",
-    path: "/games/:appId/schema",
+    path: "/games/{appId}/schema",
     request: { params: steamGameSchemaParamsSchema },
     responses: {
       200: {

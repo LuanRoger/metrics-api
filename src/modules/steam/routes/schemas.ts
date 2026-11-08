@@ -17,7 +17,7 @@ export const steamGameAchievementsParamsSchema = z.object({
     .openapi({
       description: "Steam application ID to retrieve achievements for.",
       example: 730,
-      param: { in: "query", name: "appId" },
+      param: { in: "path", name: "appId" },
     }),
 });
 
