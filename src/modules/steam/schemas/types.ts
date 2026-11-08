@@ -5,6 +5,7 @@ import type {
   steamGameAchievementsResponseSchema,
   steamGameDetailsSchema,
   steamGameSchema,
+  steamGameSchemaApiResponseSchema,
   steamGameSchemaResponseSchema,
   steamGameStatSchema,
   steamGamesResponseSchema,
@@ -33,6 +34,9 @@ export type SteamGameStat = z.infer<typeof steamGameStatSchema>;
 export type SteamGameAchievement = z.infer<typeof steamGameAchievementSchema>;
 export type SteamAvailableGameStats = z.infer<
   typeof steamAvailableGameStatsSchema
+>;
+export type SteamGameSchemaApiResponse = z.infer<
+  typeof steamGameSchemaApiResponseSchema
 >;
 export type SteamGameSchema = z.infer<typeof steamGameDetailsSchema>;
 export type SteamGameSchemaResponse = z.infer<

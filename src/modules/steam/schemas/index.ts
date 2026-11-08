@@ -123,8 +123,35 @@ export const steamGameDetailsSchema = z
   })
   .openapi("SteamGameDetails");
 
-export const steamGameSchemaResponseSchema = z
+export const steamGameSchemaResponseSchema = steamGameDetailsSchema.openapi(
+  "SteamGameSchemaResponse"
+);
+
+export const steamGameSchemaApiResponseSchema = z
   .object({
-    game: steamGameDetailsSchema,
+    game: z.object({
+      availableGameStats: z.object({
+        achievements: z.array(
+          z.object({
+            defaultvalue: z.number(),
+            description: z.string(),
+            displayName: z.string(),
+            hidden: z.number(),
+            icon: z.string(),
+            icongray: z.string(),
+            name: z.string(),
+          })
+        ),
+        stats: z.array(
+          z.object({
+            defaultvalue: z.number(),
+            displayName: z.string(),
+            name: z.string(),
+          })
+        ),
+      }),
+      gameName: z.string(),
+      gameVersion: z.string(),
+    }),
   })
-  .openapi("SteamGameSchemaResponse");
+  .openapi("SteamGameSchemaApiResponse");

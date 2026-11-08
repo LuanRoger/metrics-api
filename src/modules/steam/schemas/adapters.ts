@@ -1,9 +1,38 @@
 import type {
   SteamGameAchievementsResponse,
+  SteamGameSchemaApiResponse,
+  SteamGameSchemaResponse,
   SteamGamesResponse,
   SteamOwnedGamesApiResponse,
   SteamPlayerStatsAchievementsApiResponse,
 } from "./types";
+
+export function adaptGameSchemaResponseToSteamGameSchemaResponse(
+  response: SteamGameSchemaApiResponse
+): SteamGameSchemaResponse {
+  const { game } = response;
+
+  return {
+    availableGameStats: {
+      achievements: game.availableGameStats.achievements.map((achievement) => ({
+        defaultvalue: achievement.defaultvalue,
+        description: achievement.description,
+        displayName: achievement.displayName,
+        hidden: achievement.hidden,
+        icon: achievement.icon,
+        icongray: achievement.icongray,
+        name: achievement.name,
+      })),
+      stats: game.availableGameStats.stats.map((stat) => ({
+        defaultvalue: stat.defaultvalue,
+        displayName: stat.displayName,
+        name: stat.name,
+      })),
+    },
+    gameName: game.gameName,
+    gameVersion: game.gameVersion,
+  };
+}
 
 export function adaptPlayerStatsResponseToSteamPlayerStatsResponse(
   response: SteamPlayerStatsAchievementsApiResponse

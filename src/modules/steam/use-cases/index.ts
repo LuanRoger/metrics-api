@@ -1,10 +1,12 @@
 import { ENV } from "varlock/env";
 import { UnexpectedServiceResponseParseError } from "@/shared/errors";
 import {
+  steamGameSchemaApiResponseSchema,
   steamOwnedGamesApiResponseSchema,
   steamPlayerStatsAchievementsApiResponseSchema,
 } from "../schemas";
 import {
+  adaptGameSchemaResponseToSteamGameSchemaResponse,
   adaptOwnedGamesResponseToSteamGamesResponse,
   adaptPlayerStatsResponseToSteamPlayerStatsResponse,
 } from "../schemas/adapters";
@@ -46,10 +48,32 @@ export async function getSteamGameAchievements(appId: number) {
   const response = await fetch(url);
   const jsonResponse: unknown = await response.json();
   const { success, data, error } =
-    await steamPlayerStatsAchievementsApiResponseSchema.safeParseAsync(jsonResponse);
+    await steamPlayerStatsAchievementsApiResponseSchema.safeParseAsync(
+      jsonResponse
+    );
   if (!success) {
     throw new UnexpectedServiceResponseParseError("Steam", error);
   }
 
   return adaptPlayerStatsResponseToSteamPlayerStatsResponse(data);
+}
+
+export async function getSteamGameSchema(appId: number) {
+  const {
+    STEAM_API_KEY: apiKey,
+    STEAM_ID: steamId,
+    STEAM_BASE_URL: baseUrl,
+  } = ENV;
+
+  const url = `${baseUrl}/ISteamUserStats/GetSchemaForGame/v0002/?key=${apiKey}&steamid=${steamId}&appid=${appId}&l=en&format=json`;
+
+  const response = await fetch(url);
+  const jsonResponse: unknown = await response.json();
+  const { success, data, error } =
+    await steamGameSchemaApiResponseSchema.safeParseAsync(jsonResponse);
+  if (!success) {
+    throw new UnexpectedServiceResponseParseError("Steam", error);
+  }
+
+  return adaptGameSchemaResponseToSteamGameSchemaResponse(data);
 }

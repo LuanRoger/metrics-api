@@ -1,10 +1,16 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { formatServiceError } from "@/shared/errors/utils";
 import { responseErrorSchema } from "@/shared/schemas";
-import { getSteamGameAchievements, getSteamGames } from "../use-cases";
+import {
+  getSteamGameAchievements,
+  getSteamGameSchema,
+  getSteamGames,
+} from "../use-cases";
 import {
   steamGameAchievementsParamsSchema,
   steamGameAchievementsResponseSchema,
+  steamGameSchemaParamsSchema,
+  steamGameSchemaResponseSchema,
   steamGamesResponseSchema,
 } from "./schemas";
 
@@ -115,6 +121,74 @@ app.openapi(
               code: "INTERNAL_ERROR",
               message:
                 "The Steam achievements response did not match the expected format.",
+            },
+          },
+          500
+        );
+      }
+
+      return c.json(data, 200);
+    } catch (error) {
+      const serviceError = formatServiceError(error);
+      if (serviceError) {
+        return c.json({ error: serviceError }, 502);
+      }
+      return c.json(
+        {
+          error: {
+            code: "INTERNAL_ERROR",
+            message: "An unexpected error occurred.",
+          },
+        },
+        500
+      );
+    }
+  }
+);
+
+app.openapi(
+  createRoute({
+    description: "Get the statistics and achievements schema for a Steam game.",
+    method: "get",
+    operationId: "getSteamGameSchema",
+    path: "/games/:appId/schema",
+    request: { params: steamGameSchemaParamsSchema },
+    responses: {
+      200: {
+        content: {
+          "application/json": { schema: steamGameSchemaResponseSchema },
+        },
+        description: "Steam game schema",
+      },
+      400: {
+        content: { "application/json": { schema: responseErrorSchema } },
+        description: "Invalid appId path parameter",
+      },
+      500: {
+        content: { "application/json": { schema: responseErrorSchema } },
+        description: "Unexpected internal error",
+      },
+      502: {
+        content: { "application/json": { schema: responseErrorSchema } },
+        description: "Steam returned an invalid response",
+      },
+    },
+    summary: "Get Steam game schema",
+    tags: ["Steam"],
+  }),
+  async (c) => {
+    const { appId } = c.req.valid("param");
+    try {
+      const response = await getSteamGameSchema(appId);
+      const { success, data } =
+        steamGameSchemaResponseSchema.safeParse(response);
+      if (!success) {
+        return c.json(
+          {
+            error: {
+              code: "INTERNAL_ERROR",
+              message:
+                "The Steam game schema did not match the expected format.",
             },
           },
           500
