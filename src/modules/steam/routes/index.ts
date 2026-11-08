@@ -6,6 +6,7 @@ import {
   getSteamGameSchema,
   getSteamGames,
 } from "../use-cases";
+import { getSteamGameSchema as getSteamGameSchemaFromKV } from "../utils/kv";
 import {
   steamGameAchievementsParamsSchema,
   steamGameAchievementsResponseSchema,
@@ -109,9 +110,20 @@ app.openapi(
     tags: ["Steam"],
   }),
   async (c) => {
+    const kv = c.env.CACHE;
     const { appId } = c.req.valid("param");
+
     try {
-      const response = await getSteamGameAchievements(appId);
+      const {
+        availableGameStats: { achievements: achievementsSchema },
+      } = await getSteamGameSchemaFromKV(kv, appId, () =>
+        getSteamGameSchema(appId)
+      );
+
+      const response = await getSteamGameAchievements(
+        appId,
+        achievementsSchema
+      );
       const { success, data } =
         steamGameAchievementsResponseSchema.safeParse(response);
       if (!success) {

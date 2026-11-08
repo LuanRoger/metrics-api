@@ -10,6 +10,7 @@ import {
   adaptOwnedGamesResponseToSteamGamesResponse,
   adaptPlayerStatsResponseToSteamAchievementsResponse,
 } from "../schemas/adapters";
+import type { SteamGameAchievement } from "../schemas/types";
 
 export async function getSteamGames() {
   const {
@@ -36,7 +37,10 @@ export async function getSteamGames() {
   return sortedGames;
 }
 
-export async function getSteamGameAchievements(appId: number) {
+export async function getSteamGameAchievements(
+  appId: number,
+  achievementsSchema: SteamGameAchievement[]
+) {
   const {
     STEAM_API_KEY: apiKey,
     STEAM_ID: steamId,
@@ -55,13 +59,9 @@ export async function getSteamGameAchievements(appId: number) {
     throw new UnexpectedServiceResponseParseError("Steam", error);
   }
 
-  const {
-    availableGameStats: { achievements: achievementsResponse },
-  } = await getSteamGameSchema(appId);
-
   const achievements = adaptPlayerStatsResponseToSteamAchievementsResponse(
     data,
-    achievementsResponse
+    achievementsSchema
   );
 
   return achievements.sort((a, b) => b.unlocktime - a.unlocktime);
