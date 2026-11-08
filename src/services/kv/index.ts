@@ -5,8 +5,12 @@ import {
   type CacheEntryName,
 } from "./constants";
 
-export function getCacheKey(domain: CacheDomain, name: CacheEntryName): string {
-  return `${CACHE_KEY_PREFIX}:${domain}:${name}`;
+export function getCacheKey(
+  domain: CacheDomain,
+  name: CacheEntryName,
+  value?: string
+): string {
+  return `${CACHE_KEY_PREFIX}:${domain}:${name}${value ? `:${value}` : ""}`;
 }
 
 export function parseCacheEntry<T>(raw: string): T {
