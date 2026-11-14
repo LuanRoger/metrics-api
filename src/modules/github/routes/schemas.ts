@@ -2,7 +2,7 @@ import z from "zod";
 
 export const issueQuerySchema = z.object({
   status: z
-    .enum(["open", "closed", "draft"])
+    .enum(["open", "closed"])
     .default("open")
     .openapi({
       description:

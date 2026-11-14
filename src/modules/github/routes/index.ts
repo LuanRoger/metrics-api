@@ -163,17 +163,6 @@ app.openapi(
   }),
   async (c) => {
     const { status } = c.req.valid("query");
-    if (status === "draft") {
-      return c.json(
-        {
-          error: {
-            code: "INVALID_REQUEST",
-            message: "GitHub search does not support draft issues.",
-          },
-        },
-        400
-      );
-    }
     try {
       const issues = await (status === "closed"
         ? getCloseIssues()
