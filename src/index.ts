@@ -64,6 +64,7 @@ app.doc("/openapi", {
     { description: "GitHub profile and activity.", name: "GitHub" },
     { description: "Coding activity from WakaTime.", name: "WakaTime" },
     { description: "Owned games from Steam.", name: "Steam" },
+    { description: "Spotify streaming activity.", name: "Spotify" },
   ],
 });
 app.get("/doc", Scalar({ url: "/openapi" }));
