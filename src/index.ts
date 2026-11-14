@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { poweredBy } from "hono/powered-by";
 import { rateLimiter } from "hono-rate-limiter";
+import { githubModule } from "./modules/github/routes";
 import { spotifyModule } from "./modules/spotify/routes";
 import { steamModule } from "./modules/steam/routes";
 import { wakatimeModule } from "./modules/wakatime/routes";
@@ -44,6 +45,13 @@ app.use(
     cacheName: "metrics-api-steam",
   })
 );
+app.use(
+  "/github/*",
+  cache({
+    cacheControl: "max-age=18000",
+    cacheName: "metrics-api-github",
+  })
+);
 
 app.doc("/openapi", {
   info: {
@@ -53,12 +61,15 @@ app.doc("/openapi", {
   },
   openapi: "3.0.0",
   tags: [
+    { description: "GitHub profile and activity.", name: "GitHub" },
     { description: "Coding activity from WakaTime.", name: "WakaTime" },
     { description: "Owned games from Steam.", name: "Steam" },
+    { description: "Spotify streaming activity.", name: "Spotify" },
   ],
 });
 app.get("/doc", Scalar({ url: "/openapi" }));
 
+app.route("/github", githubModule);
 app.route("/wakatime", wakatimeModule);
 app.route("/spotify", spotifyModule);
 app.route("/steam", steamModule);
