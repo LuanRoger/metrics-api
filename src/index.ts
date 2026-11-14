@@ -45,6 +45,13 @@ app.use(
     cacheName: "metrics-api-steam",
   })
 );
+app.use(
+  "/github/*",
+  cache({
+    cacheControl: "max-age=18000",
+    cacheName: "metrics-api-github",
+  })
+);
 
 app.doc("/openapi", {
   info: {
