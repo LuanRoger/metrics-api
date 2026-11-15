@@ -53,6 +53,13 @@ app.use(
     cacheName: "metrics-api-github",
   })
 );
+app.use(
+  "/retroachievements/*",
+  cache({
+    cacheControl: "max-age=3600",
+    cacheName: "metrics-api-retroachievements",
+  })
+);
 
 app.doc("/openapi", {
   info: {
