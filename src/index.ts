@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { poweredBy } from "hono/powered-by";
 import { rateLimiter } from "hono-rate-limiter";
 import { githubModule } from "./modules/github/routes";
+import { retroachievementsModule } from "./modules/retroachievements/routes";
 import { spotifyModule } from "./modules/spotify/routes";
 import { steamModule } from "./modules/steam/routes";
 import { wakatimeModule } from "./modules/wakatime/routes";
@@ -62,6 +63,10 @@ app.doc("/openapi", {
   openapi: "3.0.0",
   tags: [
     { description: "GitHub profile and activity.", name: "GitHub" },
+    {
+      description: "RetroAchievements profile and game progress.",
+      name: "RetroAchievements",
+    },
     { description: "Coding activity from WakaTime.", name: "WakaTime" },
     { description: "Owned games from Steam.", name: "Steam" },
     { description: "Spotify streaming activity.", name: "Spotify" },
@@ -70,6 +75,7 @@ app.doc("/openapi", {
 app.get("/doc", Scalar({ url: "/openapi" }));
 
 app.route("/github", githubModule);
+app.route("/retroachievements", retroachievementsModule);
 app.route("/wakatime", wakatimeModule);
 app.route("/spotify", spotifyModule);
 app.route("/steam", steamModule);
